@@ -17,6 +17,7 @@ export default function ProductCard({ product, onSelect }: Props) {
     <button
       type="button"
       onClick={handleSelect}
+      data-testid="product-card"
       className="group flex flex-col gap-3 rounded-2xl border border-black/10 bg-white p-3 text-left transition hover:-translate-y-0.5 hover:shadow-lg dark:bg-zinc-900"
     >
       <ProductImage

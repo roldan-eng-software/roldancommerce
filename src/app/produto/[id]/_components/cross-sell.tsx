@@ -35,6 +35,7 @@ export default function CrossSell({ items }: Props) {
         {items.map((item, i) => (
           <motion.div
             key={item.id}
+            data-testid="cross-sell-card"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
