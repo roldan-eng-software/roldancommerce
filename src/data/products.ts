@@ -13,16 +13,31 @@ export interface Product {
   manualUrl?: string;
   relacionados?: string[];
   peso?: number;
+  imagemUrl?: string;
 }
 
-export const SAO_CARLOS_CEPS = ["13560", "13561", "13562", "13563", "13564", "13565", "13566", "13567", "13568", "13569"];
+export const SAO_CARLOS_CEPS = [
+  "13560",
+  "13561",
+  "13562",
+  "13563",
+  "13564",
+  "13565",
+  "13566",
+  "13567",
+  "13568",
+  "13569",
+];
 
 export function isSaoCarlos(cep: string): boolean {
   const clean = cep.replace(/\D/g, "");
   return SAO_CARLOS_CEPS.some((prefix) => clean.startsWith(prefix));
 }
 
-export function calcFrete(cep: string, items: { product: Product; quantity: number }[]): { valor: number; prazo: string } | null {
+export function calcFrete(
+  cep: string,
+  items: { product: Product; quantity: number }[]
+): { valor: number; prazo: string } | null {
   const clean = cep.replace(/\D/g, "");
   if (clean.length !== 8) return null;
 
@@ -30,7 +45,10 @@ export function calcFrete(cep: string, items: { product: Product; quantity: numb
     return { valor: 0, prazo: "Entrega no dia seguinte" };
   }
 
-  const totalPeso = items.reduce((sum, i) => sum + (i.product.peso ?? 0.5) * i.quantity, 0);
+  const totalPeso = items.reduce(
+    (sum, i) => sum + (i.product.peso ?? 0.5) * i.quantity,
+    0
+  );
   const valor = Math.max(15, Math.round(totalPeso * 4.5 * 100) / 100);
   const maxDias = items.reduce((max, i) => {
     if (i.product.disponibilidade === "sob-medida") return Math.max(max, 10);
@@ -62,8 +80,13 @@ export const PRODUCTS: Product[] = [
     medidas: "10 x 12 x 8 cm",
     corMdf: "Branco / Madeirado",
     descricao: "Apoio de mesa em MDF para celular na vertical ou horizontal.",
-    resumoRapido: "Prático e compacto. Coloque o celular na vertical ou horizontal.",
-    relacionados: ["porta-tablets", "suporte-monitor", "nicho-organizador-mesa"],
+    resumoRapido:
+      "Prático e compacto. Coloque o celular na vertical ou horizontal.",
+    relacionados: [
+      "porta-tablets",
+      "suporte-monitor",
+      "nicho-organizador-mesa",
+    ],
   },
   {
     id: "nicho-decorativo-parede",
@@ -75,7 +98,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Branco / Madeirado / Colorido",
     descricao: "Nicho quadrado para decorar sala, quarto ou corredor.",
     resumoRapido: "Decore com quadros, plantas ou livros. Fixação na parede.",
-    relacionados: ["prateleiras-parede", "nicho-organizador-mesa", "suporte-leitura"],
+    relacionados: [
+      "prateleiras-parede",
+      "nicho-organizador-mesa",
+      "suporte-leitura",
+    ],
   },
   {
     id: "mesa-cabeceira",
@@ -86,8 +113,13 @@ export const PRODUCTS: Product[] = [
     medidas: "40 x 45 x 35 cm",
     corMdf: "Branco / Madeirado",
     descricao: "Criado-mudo compacto com nicho aberto para quarto.",
-    resumoRapido: "Criado-mudo com nicho aberto. Guarda livros e objetos de cabeceira.",
-    relacionados: ["nicho-decorativo-parede", "prateleiras-parede", "suporte-leitura"],
+    resumoRapido:
+      "Criado-mudo com nicho aberto. Guarda livros e objetos de cabeceira.",
+    relacionados: [
+      "nicho-decorativo-parede",
+      "prateleiras-parede",
+      "suporte-leitura",
+    ],
   },
   {
     id: "prateleiras-parede",
@@ -98,8 +130,13 @@ export const PRODUCTS: Product[] = [
     medidas: "60 x 20 x 15 cm",
     corMdf: "Branco / Madeirado",
     descricao: "Par de prateleiras retas para livros e decoração.",
-    resumoRapido: "Pack de 2 prateleiras. 60 cm de largura para livros e decoração.",
-    relacionados: ["nicho-decorativo-parede", "suporte-air-fryer", "suporte-monitor"],
+    resumoRapido:
+      "Pack de 2 prateleiras. 60 cm de largura para livros e decoração.",
+    relacionados: [
+      "nicho-decorativo-parede",
+      "suporte-air-fryer",
+      "suporte-monitor",
+    ],
   },
   {
     id: "armario-banheiro-rodizios",
@@ -121,7 +158,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Madeirado / Branco",
     descricao: "Mesa de centro baixa com nichos para sala de TV.",
     resumoRapido: "Mesa de centro com nichos para home theater e decoração.",
-    relacionados: ["armario-banheiro-rodizios", "nicho-organizador-chao", "suporte-monitor"],
+    relacionados: [
+      "armario-banheiro-rodizios",
+      "nicho-organizador-chao",
+      "suporte-monitor",
+    ],
   },
   {
     id: "porta-tablets",
@@ -149,7 +190,7 @@ export const PRODUCTS: Product[] = [
     id: "caixa-biblias",
     nome: "Caixa para Guardar Bíblias",
     preco: 69.9,
- disponibilidade: "pronta-entrega",
+    disponibilidade: "pronta-entrega",
     medidas: "30 x 22 x 12 cm",
     corMdf: "Madeirado / Colorido",
     descricao: "Caixa com tampa para guardar e proteger bíblias.",
@@ -165,7 +206,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Branco / Colorido",
     descricao: "Caixa organizadora com divisórias para sachês de chá.",
     resumoRapido: "Organize seus sachês de chá com divisórias internas.",
-    relacionados: ["caixa-biblias", "nicho-organizador-mesa", "porta-guardanapos"],
+    relacionados: [
+      "caixa-biblias",
+      "nicho-organizador-mesa",
+      "porta-guardanapos",
+    ],
   },
   {
     id: "nicho-organizador-chao",
@@ -176,7 +221,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Branco / Madeirado",
     descricao: "Nicho baixo empilhável para brinquedos, calçados e mantas.",
     resumoRapido: "Empilhe vários para organizar brinquedos e calçados.",
-    relacionados: ["nicho-organizador-mesa", "armario-banheiro-rodizios", "mesa-centro-tv"],
+    relacionados: [
+      "nicho-organizador-mesa",
+      "armario-banheiro-rodizios",
+      "mesa-centro-tv",
+    ],
   },
   {
     id: "portas-avulsas",
@@ -186,7 +235,8 @@ export const PRODUCTS: Product[] = [
     medidas: "Sob medida",
     corMdf: "Branco / Madeirado / Colorido",
     descricao: "Portas em MDF sob medida para móveis planejados existentes.",
-    resumoRapido: "Substitua portas de armários sob medida. Envio em até 10 dias.",
+    resumoRapido:
+      "Substitua portas de armários sob medida. Envio em até 10 dias.",
     relacionados: ["tampo-mdf", "armario-banheiro-rodizios", "mesa-centro-tv"],
   },
   {
@@ -208,7 +258,8 @@ export const PRODUCTS: Product[] = [
     medidas: "30 x 22 cm, plano inclinado",
     corMdf: "Madeirado / Branco",
     descricao: "Plano inclinado ergonômico para leitura de livros e tablets.",
-    resumoRapido: "Plano inclinado ergonômico. Mantenha livros abertos sem segurar.",
+    resumoRapido:
+      "Plano inclinado ergonômico. Mantenha livros abertos sem segurar.",
     relacionados: ["porta-celulares", "porta-biblias", "prateleiras-parede"],
   },
   {
@@ -219,8 +270,13 @@ export const PRODUCTS: Product[] = [
     medidas: "35 x 15 x 12 cm",
     corMdf: "Branco / Colorido",
     descricao: "Organizador com nichos para escritório e home office.",
-    resumoRapido: "Mantenha canetas, clipes e papéis organizados no escritório.",
-    relacionados: ["suporte-monitor", "nicho-decorativo-parede", "porta-celulares"],
+    resumoRapido:
+      "Mantenha canetas, clipes e papéis organizados no escritório.",
+    relacionados: [
+      "suporte-monitor",
+      "nicho-decorativo-parede",
+      "porta-celulares",
+    ],
   },
   {
     id: "expositor-roupas",
@@ -231,7 +287,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Madeirado / Branco",
     descricao: "Arara de parede com tubo cabideiro para loja e quarto.",
     resumoRapido: "Arara de parede com tubo cabideiro para loja ou quarto.",
-    relacionados: ["expositor-calcados", "prateleiras-parede", "nicho-decorativo-parede"],
+    relacionados: [
+      "expositor-calcados",
+      "prateleiras-parede",
+      "nicho-decorativo-parede",
+    ],
   },
   {
     id: "expositor-calcados",
@@ -242,7 +302,11 @@ export const PRODUCTS: Product[] = [
     corMdf: "Branco / Madeirado",
     descricao: "Prateleira inclinada para expor tênis e sapatos na parede.",
     resumoRapido: "Exponha tênis e sapatos como decoração na parede.",
-    relacionados: ["expositor-roupas", "prateleiras-parede", "nicho-organizador-chao"],
+    relacionados: [
+      "expositor-roupas",
+      "prateleiras-parede",
+      "nicho-organizador-chao",
+    ],
   },
   {
     id: "suporte-air-fryer",
@@ -252,8 +316,13 @@ export const PRODUCTS: Product[] = [
     medidas: "45 x 35 x 30 cm",
     corMdf: "Branco",
     descricao: "Prateleira reforçada de parede para Air Fryer.",
-    resumoRapido: "Fixe na parede e libere espaço na bancada. Suporta Air Fryer.",
-    relacionados: ["suporte-micro-ondas", "prateleiras-parede", "nicho-organizador-mesa"],
+    resumoRapido:
+      "Fixe na parede e libere espaço na bancada. Suporta Air Fryer.",
+    relacionados: [
+      "suporte-micro-ondas",
+      "prateleiras-parede",
+      "nicho-organizador-mesa",
+    ],
   },
   {
     id: "suporte-micro-ondas",
@@ -263,9 +332,14 @@ export const PRODUCTS: Product[] = [
     destaque: true,
     medidas: "60 x 40 x 35 cm, suporta até 20kg e 21L",
     corMdf: "Branco",
-    descricao: "Prateleira reforçada de parede para micro-ondas até 21L e 20kg.",
+    descricao:
+      "Prateleira reforçada de parede para micro-ondas até 21L e 20kg.",
     resumoRapido: "Suporta até 20kg e 21L. Fixe na parede e libere a bancada.",
-    relacionados: ["suporte-air-fryer", "prateleiras-parede", "nicho-organizador-mesa"],
+    relacionados: [
+      "suporte-air-fryer",
+      "prateleiras-parede",
+      "nicho-organizador-mesa",
+    ],
   },
   {
     id: "tampo-mdf",
@@ -275,8 +349,13 @@ export const PRODUCTS: Product[] = [
     medidas: "Até 60 x 90 cm, branco",
     corMdf: "Branco",
     descricao: "Tampo em MDF branco cortado sob medida até 60 x 90 cm.",
-    resumoRapido: "Corte sob medida até 60x90 cm. Ideal para bancadas e estantes.",
-    relacionados: ["portas-avulsas", "mesa-centro-tv", "armario-banheiro-rodizios"],
+    resumoRapido:
+      "Corte sob medida até 60x90 cm. Ideal para bancadas e estantes.",
+    relacionados: [
+      "portas-avulsas",
+      "mesa-centro-tv",
+      "armario-banheiro-rodizios",
+    ],
   },
   {
     id: "suporte-monitor",
@@ -288,6 +367,10 @@ export const PRODUCTS: Product[] = [
     corMdf: "Branco / Madeirado",
     descricao: "Base elevada para monitor com espaço para teclado e Nicho.",
     resumoRapido: "Erga o monitor e ganhe nicho embaixo para teclado.",
-    relacionados: ["porta-celulares", "nicho-organizador-mesa", "suporte-leitura"],
+    relacionados: [
+      "porta-celulares",
+      "nicho-organizador-mesa",
+      "suporte-leitura",
+    ],
   },
 ];

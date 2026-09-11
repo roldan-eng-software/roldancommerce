@@ -1,35 +1,54 @@
 "use client";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+
+const registerSchema = z.object({
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+});
+
+type RegisterValues = z.infer<typeof registerSchema>;
 
 export default function RegisterForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const supabase = createClient();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  async function handleRegister(data: RegisterValues) {
+    setIsSubmitting(true);
     setError("");
 
     const { error: authError } = await supabase.auth.signUp({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
 
     if (authError) {
       setError(authError.message);
-      setLoading(false);
+      setIsSubmitting(false);
       return;
     }
 
-    setSuccess(true);
-    setLoading(false);
+    setIsSuccess(true);
+    setIsSubmitting(false);
   }
 
   async function handleGoogle() {
@@ -39,7 +58,7 @@ export default function RegisterForm() {
     });
   }
 
-  if (success) {
+  if (isSuccess) {
     return (
       <div className="rounded-2xl border bg-emerald-50 p-6 text-center">
         <p className="text-lg font-bold text-emerald-800">Conta criada!</p>
@@ -51,67 +70,62 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit(handleRegister)}
+      className="flex flex-col gap-4"
+    >
       {error && (
         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
           {error}
         </div>
       )}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="reg-email" className="text-sm font-medium">
-          E-mail
-        </label>
-        <input
+        <Label htmlFor="reg-email">E-mail</Label>
+        <Input
           id="reg-email"
           type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm"
           placeholder="seu@email.com"
+          aria-invalid={!!errors.email}
+          {...register("email")}
         />
+        {errors.email && (
+          <p className="text-xs text-red-600">{errors.email.message}</p>
+        )}
       </div>
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="reg-password" className="text-sm font-medium">
-          Senha
-        </label>
-        <input
+        <Label htmlFor="reg-password">Senha</Label>
+        <Input
           id="reg-password"
           type="password"
-          required
-          minLength={6}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="rounded-lg border px-3 py-2 text-sm"
           placeholder="Mínimo 6 caracteres"
+          aria-invalid={!!errors.password}
+          {...register("password")}
         />
+        {errors.password && (
+          <p className="text-xs text-red-600">{errors.password.message}</p>
+        )}
       </div>
       <p className="text-xs text-zinc-500">
         Ao criar conta, você concorda com nossos termos e política de
         privacidade conforme LGPD.
       </p>
-      <button
-        type="submit"
-        disabled={loading}
-        className="w-full rounded-full bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800 disabled:opacity-50"
-      >
-        {loading ? "Criando conta..." : "Criar conta"}
-      </button>
+      <Button type="submit" disabled={isSubmitting} className="w-full">
+        {isSubmitting ? "Criando conta..." : "Criar conta"}
+      </Button>
       <div className="relative my-2">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t" />
-        </div>
+        <Separator />
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-white px-2 text-zinc-500">ou</span>
         </div>
       </div>
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={handleGoogle}
-        className="w-full rounded-full border border-black/15 px-6 py-3 text-sm font-semibold hover:bg-zinc-50"
+        className="w-full"
       >
         Cadastrar com Google
-      </button>
+      </Button>
     </form>
   );
 }

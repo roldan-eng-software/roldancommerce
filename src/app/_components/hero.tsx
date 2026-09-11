@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Hero() {
   return (
@@ -15,15 +16,10 @@ export default function Hero() {
           Carlos e envio para todo o Brasil.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="#catalogo"
-            className="rounded-full bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-zinc-800"
-          >
-            Ver catálogo
-          </Link>
-          <span className="rounded-full border border-black/15 px-6 py-3 text-sm font-medium">
+          <Button render={<a href="#catalogo" />}>Ver catálogo</Button>
+          <Button variant="outline" disabled>
             Pronta-entrega · envio dia seguinte
-          </span>
+          </Button>
         </div>
       </div>
     </section>

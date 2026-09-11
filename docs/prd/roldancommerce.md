@@ -1,7 +1,7 @@
 # PRD — E-commerce Roldan Marcenaria
 
 > Tipo: PRD inicial · Data: 2026-09-11
-> **Status:** Aguardando implementação
+> **Status:** Implementada
 >
 > <!-- Valores possíveis: "Aguardando implementação" | "Implementada". Atualize para "Implementada" quando todas as specs estiverem concluídas. -->
 

@@ -1,17 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PRODUCTS, formatPrice, prazoLabel, type Product } from "@/data/products";
-import AddToCartButton from "./add-to-cart-button";
-import CrossSell from "./cross-sell";
+import { formatPrice, prazoLabel } from "@/data/products";
+import { getProductById, getRelatedProducts } from "./_data-access/get-product";
+import AddToCartButton from "./_components/add-to-cart-button";
+import CrossSell from "./_components/cross-sell";
+import ProductImage from "@/components/product-image";
 
 export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ id: p.id }));
+  const { PRODUCTS } = require("@/data/products");
+  return PRODUCTS.map((p: { id: string }) => ({ id: p.id }));
 }
 
-export function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   return params.then(({ id }) => {
-    const p = PRODUCTS.find((x) => x.id === id);
-    return { title: p ? `${p.nome} — Roldan Marcenaria` : "Produto não encontrado" };
+    const p = getProductById(id);
+    return {
+      title: p ? `${p.nome} — Roldan Marcenaria` : "Produto não encontrado",
+    };
   });
 }
 
@@ -21,15 +30,13 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = PRODUCTS.find((p) => p.id === id);
+  const product = getProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  const related = (product.relacionados ?? [])
-    .map((rid) => PRODUCTS.find((p) => p.id === rid))
-    .filter(Boolean) as Product[];
+  const related = getRelatedProducts(product);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
@@ -46,13 +53,18 @@ export default async function ProductPage({
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="flex aspect-square items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 text-7xl font-bold text-amber-900 dark:from-zinc-800 dark:to-zinc-700 dark:text-zinc-200">
-          {product.nome.charAt(0)}
-        </div>
+        <ProductImage
+          productId={product.id}
+          nome={product.nome}
+          size="lg"
+          className="rounded-2xl"
+        />
 
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-3xl font-bold tracking-tight">{product.nome}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {product.nome}
+            </h1>
             <p className="text-sm text-emerald-700">
               {prazoLabel(product.disponibilidade)}
             </p>
