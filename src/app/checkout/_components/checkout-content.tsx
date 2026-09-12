@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice, isSaoCarlos } from "@/data/products";
+import { createOrder } from "@/app/_actions/orders";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,23 +12,76 @@ import { Separator } from "@/components/ui/separator";
 
 type PaymentMethod = "pix" | "card" | "entrega";
 
+interface OrderResult {
+  orderId: string;
+  method: PaymentMethod;
+}
+
 export default function CheckoutContent() {
   const { items, subtotal, clearCart } = useCart();
   const [cep, setCep] = useState("");
+  const [logradouro, setLogradouro] = useState("");
+  const [numero, setNumero] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [cidade, setCidade] = useState("");
+  const [uf, setUf] = useState("");
   const [freteValor, setFreteValor] = useState<number | null>(null);
   const [fretePrazo, setFretePrazo] = useState("");
   const [metodo, setMetodo] = useState<PaymentMethod>("pix");
-  const [isFinalized, setIsFinalized] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [orderResult, setOrderResult] = useState<OrderResult | null>(null);
 
   const isLocal = cep ? isSaoCarlos(cep) : false;
   const total = subtotal + (freteValor ?? 0);
 
-  function handleFinish() {
-    setIsFinalized(true);
+  async function handleFinish() {
+    setError("");
+    setLoading(true);
+
+    if (freteValor === null) {
+      setError("Calcule o frete antes de finalizar.");
+      setLoading(false);
+      return;
+    }
+
+    if (!cep || cep.replace(/\D/g, "").length !== 8) {
+      setError("Informe um CEP válido.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await createOrder({
+      items: items.map((i) => ({
+        productId: i.product.id,
+        quantity: i.quantity,
+        unitPrice: i.product.preco,
+      })),
+      subtotal,
+      freteValor,
+      freteCep: cep,
+      fretePrazo,
+      paymentMethod: metodo,
+      cep: cep.replace(/\D/g, ""),
+      logradouro,
+      numero,
+      complemento,
+      cidade,
+      uf,
+    });
+
+    setLoading(false);
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    setOrderResult({ orderId: result.orderId!, method: metodo });
     clearCart();
   }
 
-  if (items.length === 0 && !isFinalized) {
+  if (items.length === 0 && !orderResult) {
     return (
       <main className="mx-auto flex min-h-[60vh] w-full max-w-4xl flex-col items-center justify-center px-4 py-12 text-center">
         <p className="text-2xl font-bold">Carrinho vazio</p>
@@ -38,7 +92,7 @@ export default function CheckoutContent() {
     );
   }
 
-  if (isFinalized) {
+  if (orderResult) {
     return (
       <main className="mx-auto flex min-h-[60vh] w-full max-w-2xl flex-col items-center justify-center px-4 py-12 text-center">
         <div className="rounded-2xl border bg-emerald-50 p-8">
@@ -47,9 +101,12 @@ export default function CheckoutContent() {
             Pedido confirmado!
           </p>
           <p className="mt-2 text-sm text-emerald-700">
-            {metodo === "pix"
+            Pedido #{orderResult.orderId.slice(0, 8).toUpperCase()}
+          </p>
+          <p className="mt-1 text-sm text-emerald-700">
+            {orderResult.method === "pix"
               ? "PIX gerado. Use o QR code para pagamento."
-              : metodo === "card"
+              : orderResult.method === "card"
                 ? "Cartão processado com sucesso."
                 : "Pagamento será cobrado na entrega."}
           </p>
@@ -85,15 +142,62 @@ export default function CheckoutContent() {
 
           <section className="rounded-xl border p-4">
             <h2 className="text-sm font-semibold">Entrega</h2>
-            <div className="mt-3 flex flex-col gap-2">
-              <div className="flex gap-2">
+            <div className="mt-3 flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="cep">CEP *</Label>
                 <Input
+                  id="cep"
                   maxLength={9}
                   value={cep}
                   onChange={(e) => setCep(e.target.value)}
-                  placeholder="Digite seu CEP"
-                  className="flex-1"
+                  placeholder="00000-000"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="logradouro">Logradouro</Label>
+                  <Input
+                    id="logradouro"
+                    value={logradouro}
+                    onChange={(e) => setLogradouro(e.target.value)}
+                    placeholder="Rua, Av..."
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="numero">Número</Label>
+                  <Input
+                    id="numero"
+                    value={numero}
+                    onChange={(e) => setNumero(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="complemento">Compl.</Label>
+                  <Input
+                    id="complemento"
+                    value={complemento}
+                    onChange={(e) => setComplemento(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="cidade">Cidade</Label>
+                  <Input
+                    id="cidade"
+                    value={cidade}
+                    onChange={(e) => setCidade(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="uf">UF</Label>
+                  <Input
+                    id="uf"
+                    maxLength={2}
+                    value={uf}
+                    onChange={(e) => setUf(e.target.value)}
+                  />
+                </div>
               </div>
               {freteValor !== null && (
                 <div className="text-sm">
@@ -186,8 +290,17 @@ export default function CheckoutContent() {
                 <span>{formatPrice(total)}</span>
               </div>
             </div>
-            <Button onClick={handleFinish} className="mt-4 w-full">
-              Confirmar pedido
+            {error && (
+              <div className="mt-3 rounded-lg bg-red-50 p-2 text-xs text-red-700">
+                {error}
+              </div>
+            )}
+            <Button
+              onClick={handleFinish}
+              disabled={loading}
+              className="mt-4 w-full"
+            >
+              {loading ? "Processando..." : "Confirmar pedido"}
             </Button>
             <p className="mt-2 text-center text-xs text-zinc-500">
               Pagamento processado via Asaas
