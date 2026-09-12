@@ -45,6 +45,7 @@ export default function CrossSell({ items }: Props) {
               <ProductImage
                 productId={item.id}
                 nome={item.nome}
+                imageUrl={item.imagemUrl}
                 size="sm"
                 className="rounded-lg"
               />

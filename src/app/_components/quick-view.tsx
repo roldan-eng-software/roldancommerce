@@ -58,6 +58,7 @@ export default function QuickView({ product, onClose }: Props) {
               <ProductImage
                 productId={product.id}
                 nome={product.nome}
+                imageUrl={product.imagemUrl}
                 size="lg"
               />
               <div className="flex flex-col gap-2 p-6">

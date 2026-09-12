@@ -75,6 +75,7 @@ export default function CartContent() {
                 <ProductImage
                   productId={product.id}
                   nome={product.nome}
+                  imageUrl={product.imagemUrl}
                   size="sm"
                   className="rounded-lg"
                 />

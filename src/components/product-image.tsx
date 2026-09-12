@@ -6,6 +6,7 @@ import { getProductImageUrl } from "@/lib/supabase/storage";
 interface Props {
   productId: string;
   nome: string;
+  imageUrl?: string;
   className?: string;
   size?: "sm" | "md" | "lg";
 }
@@ -19,10 +20,11 @@ const sizeClasses = {
 export default function ProductImage({
   productId,
   nome,
+  imageUrl: externalImageUrl,
   className = "",
   size = "md",
 }: Props) {
-  const imageUrl = getProductImageUrl(productId);
+  const imageUrl = externalImageUrl || getProductImageUrl(productId);
   const fallbackChar = nome.charAt(0);
 
   return (

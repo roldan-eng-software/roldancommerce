@@ -23,6 +23,7 @@ export default function ProductCard({ product, onSelect }: Props) {
       <ProductImage
         productId={product.id}
         nome={product.nome}
+        imageUrl={product.imagemUrl}
         size="md"
         className="rounded-xl"
       />

@@ -80,8 +80,16 @@ export async function uploadProductImage(
     return { error: `Falha ao registrar imagem: ${dbError.message}` };
   }
 
+  if ((count || 0) === 0) {
+    await supabase
+      .from("products")
+      .update({ image_url: publicUrl })
+      .eq("id", productId);
+  }
+
   revalidatePath(`/admin/produtos/${productId}`);
   revalidatePath(`/produto/${productId}`);
+  revalidatePath("/");
   return { url: publicUrl };
 }
 

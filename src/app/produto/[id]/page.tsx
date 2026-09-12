@@ -75,6 +75,7 @@ export default async function ProductPage({
         <ProductImage
           productId={product.id}
           nome={product.nome}
+          imageUrl={product.imagemUrl}
           size="lg"
           className="rounded-2xl"
         />
