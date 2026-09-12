@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createProduct, updateProduct } from "@/app/_actions/products-admin";
+import ImageUpload from "./image-upload";
 
 interface Category {
   id: string;
@@ -73,6 +74,9 @@ export default function ProductForm({
   const [relatedIds, setRelatedIds] = useState<string[]>(
     product?.related_ids || []
   );
+  const [productImages, setProductImages] = useState<
+    Array<{ id: string; url: string; order: number; is_primary: boolean }>
+  >([]);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -332,27 +336,41 @@ export default function ProductForm({
 
         <div className="flex flex-col gap-4">
           <fieldset className="rounded-xl border p-4">
-            <legend className="text-sm font-semibold">Imagem</legend>
-            <div className="mt-3 flex flex-col gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="imageUrl" className="text-sm font-medium">
-                  URL da imagem principal
-                </label>
-                <input
-                  id="imageUrl"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="rounded-lg border px-3 py-2 text-sm"
-                  placeholder="https://..."
+            <legend className="text-sm font-semibold">Imagens</legend>
+            <div className="mt-3">
+              {isEditing ? (
+                <ImageUpload
+                  productId={product.id}
+                  images={productImages}
+                  onImagesChange={setProductImages}
                 />
-                {imageUrl && (
-                  <img
-                    src={imageUrl}
-                    alt="Preview"
-                    className="mt-2 h-32 w-32 rounded-lg object-cover"
-                  />
-                )}
-              </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="imageUrl" className="text-sm font-medium">
+                      URL da imagem principal
+                    </label>
+                    <input
+                      id="imageUrl"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      className="rounded-lg border px-3 py-2 text-sm"
+                      placeholder="https://..."
+                    />
+                    {imageUrl && (
+                      <img
+                        src={imageUrl}
+                        alt="Preview"
+                        className="mt-2 h-32 w-32 rounded-lg object-cover"
+                      />
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    Após criar o produto, você poderá adicionar múltiplas
+                    imagens.
+                  </p>
+                </div>
+              )}
             </div>
           </fieldset>
 
