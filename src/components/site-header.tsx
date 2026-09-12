@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { signOut } from "@/lib/auth/actions";
+import CartBadge from "./cart-badge";
 
 export default async function SiteHeader() {
   let user = null;
+  let isAdmin = false;
   if (isSupabaseConfigured) {
     const supabase = await createClient();
     const { data } = await supabase!.auth.getUser();
     user = data.user;
+    if (user) {
+      isAdmin =
+        user.app_metadata?.role === "admin" ||
+        user.user_metadata?.role === "admin";
+    }
   }
 
   return (
@@ -20,8 +27,17 @@ export default async function SiteHeader() {
           <span className="hidden rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800 sm:block">
             São Carlos · Frete Grátis
           </span>
+          <CartBadge />
           {user ? (
             <div className="flex items-center gap-2">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 hover:bg-amber-100"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/perfil"
                 className="rounded-full border px-3 py-1.5 text-xs font-medium"

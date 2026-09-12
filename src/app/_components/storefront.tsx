@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { type Product } from "@/data/products";
-import { getProductsPage } from "@/app/_data-access/get-products";
+import { fetchProductsPage } from "@/app/_actions/products";
 import ProductCard from "./product-card";
 import QuickView from "./quick-view";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,16 @@ export default function Storefront({
 }: Props) {
   const [page, setPage] = useState(currentPage);
   const [selected, setSelected] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [loading, setLoading] = useState(false);
 
-  const { products: visible } = getProductsPage(page);
+  async function handlePageChange(newPage: number) {
+    setLoading(true);
+    setPage(newPage);
+    const data = await fetchProductsPage(newPage);
+    setProducts(data.products);
+    setLoading(false);
+  }
 
   if (initialProducts.length === 0) {
     return (
@@ -34,7 +42,7 @@ export default function Storefront({
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-        {visible.map((product) => (
+        {products.map((product) => (
           <ProductCard
             key={product.id}
             product={product}
@@ -42,6 +50,9 @@ export default function Storefront({
           />
         ))}
       </div>
+      {loading && (
+        <p className="text-center text-sm text-zinc-500">Carregando...</p>
+      )}
       {totalPages > 1 ? (
         <nav
           aria-label="Paginação"
@@ -50,8 +61,8 @@ export default function Storefront({
           <Button
             type="button"
             variant="outline"
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
+            disabled={page === 1 || loading}
+            onClick={() => handlePageChange(page - 1)}
           >
             Anterior
           </Button>
@@ -62,8 +73,9 @@ export default function Storefront({
               variant={n === page ? "default" : "outline"}
               size="icon"
               aria-current={n === page ? "page" : undefined}
-              onClick={() => setPage(n)}
+              onClick={() => handlePageChange(n)}
               className="size-9"
+              disabled={loading}
             >
               {n}
             </Button>
@@ -71,8 +83,8 @@ export default function Storefront({
           <Button
             type="button"
             variant="outline"
-            disabled={page === totalPages}
-            onClick={() => setPage(page + 1)}
+            disabled={page === totalPages || loading}
+            onClick={() => handlePageChange(page + 1)}
           >
             Próxima
           </Button>

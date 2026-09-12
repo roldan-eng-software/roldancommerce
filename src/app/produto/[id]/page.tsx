@@ -5,23 +5,23 @@ import { getProductById, getRelatedProducts } from "./_data-access/get-product";
 import AddToCartButton from "./_components/add-to-cart-button";
 import CrossSell from "./_components/cross-sell";
 import ProductImage from "@/components/product-image";
+import { getAllProducts } from "@/app/_data-access/get-products";
 
-export function generateStaticParams() {
-  const { PRODUCTS } = require("@/data/products");
-  return PRODUCTS.map((p: { id: string }) => ({ id: p.id }));
+export async function generateStaticParams() {
+  const products = await getAllProducts();
+  return products.map((p) => ({ id: p.id }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  return params.then(({ id }) => {
-    const p = getProductById(id);
-    return {
-      title: p ? `${p.nome} — Roldan Marcenaria` : "Produto não encontrado",
-    };
-  });
+  const { id } = await params;
+  const p = await getProductById(id);
+  return {
+    title: p ? `${p.nome} — Roldan Marcenaria` : "Produto não encontrado",
+  };
 }
 
 export default async function ProductPage({
@@ -30,13 +30,13 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  const related = getRelatedProducts(product);
+  const related = await getRelatedProducts(product);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">

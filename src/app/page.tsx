@@ -2,8 +2,8 @@ import Hero from "./_components/hero";
 import Storefront from "./_components/storefront";
 import { getProductsPage } from "./_data-access/get-products";
 
-export default function Home() {
-  const { products, totalPages, currentPage } = getProductsPage(1);
+export default async function Home() {
+  const { products, totalPages, currentPage } = await getProductsPage(1);
 
   return (
     <div className="flex min-h-full flex-col bg-zinc-50 dark:bg-black">
