@@ -6,6 +6,7 @@ import AddToCartButton from "./_components/add-to-cart-button";
 import CrossSell from "./_components/cross-sell";
 import ProductImage from "@/components/product-image";
 import { getAllProducts } from "@/app/_data-access/get-products";
+import { createBuildClient } from "@/lib/supabase/build";
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -24,13 +25,31 @@ export async function generateMetadata({
   };
 }
 
+async function getProductStock(id: string): Promise<number | undefined> {
+  const supabase = createBuildClient();
+  if (!supabase) return undefined;
+
+  const { data } = await supabase
+    .from("products")
+    .select("stock, availability")
+    .eq("id", id)
+    .single();
+
+  if (!data) return undefined;
+  if (data.availability === "sob-medida") return undefined;
+  return data.stock;
+}
+
 export default async function ProductPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const [product, stock] = await Promise.all([
+    getProductById(id),
+    getProductStock(id),
+  ]);
 
   if (!product) {
     notFound();
@@ -102,7 +121,7 @@ export default async function ProductPage({
             {product.descricao}
           </p>
 
-          <AddToCartButton product={product} />
+          <AddToCartButton product={product} stock={stock} />
         </div>
       </div>
 
