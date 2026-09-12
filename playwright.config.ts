@@ -8,5 +8,11 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     headless: true,
   },
+  webServer: {
+    command: "npx next dev --port 3000",
+    port: 3000,
+    reuseExistingServer: true,
+    timeout: 30_000,
+  },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],
 });

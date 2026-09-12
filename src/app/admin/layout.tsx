@@ -42,7 +42,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-zinc-50">
+    <div
+      className="flex min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-50 dark:text-zinc-900"
+      style={{ colorScheme: "light" }}
+    >
       <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r bg-white">
         <div className="flex h-14 items-center border-b px-4">
           <Link href="/admin" className="text-lg font-bold">
