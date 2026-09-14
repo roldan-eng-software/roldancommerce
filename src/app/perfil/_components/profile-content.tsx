@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import ProfileForm from "./profile-form";
 
 interface Props {
@@ -7,6 +8,9 @@ interface Props {
 }
 
 export default function ProfileContent({ userId }: Props) {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") ?? "/";
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-4 py-12">
       <h1 className="text-2xl font-bold">Complete seu cadastro</h1>
@@ -14,7 +18,7 @@ export default function ProfileContent({ userId }: Props) {
         Informe endereço e CPF para finalizar compras.
       </p>
       <div className="mt-6">
-        <ProfileForm userId={userId} />
+        <ProfileForm userId={userId} redirectTo={next} />
       </div>
     </main>
   );

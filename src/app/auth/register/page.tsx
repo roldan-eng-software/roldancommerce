@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import RegisterForm from "./_components/register-form";
 
@@ -9,7 +10,9 @@ export default function RegisterPage() {
         Cadastre-se para comprar e acompanhar pedidos.
       </p>
       <div className="mt-6">
-        <RegisterForm />
+        <Suspense>
+          <RegisterForm />
+        </Suspense>
       </div>
       <p className="mt-6 text-center text-sm text-zinc-500">
         Já tem conta?{" "}

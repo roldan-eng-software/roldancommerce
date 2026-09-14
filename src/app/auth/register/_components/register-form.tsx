@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { signInWithGoogle } from "@/lib/auth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,11 +19,27 @@ const registerSchema = z.object({
 
 type RegisterValues = z.infer<typeof registerSchema>;
 
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_failed: "Falha na autenticação. Tente novamente.",
+  oauth_denied: "Acesso ao Google foi negado. Tente novamente.",
+};
+
 export default function RegisterForm() {
+  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(
+        ERROR_MESSAGES[errorParam] ?? "Erro ao autenticar. Tente novamente."
+      );
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -52,10 +70,13 @@ export default function RegisterForm() {
   }
 
   async function handleGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    setIsGoogleLoading(true);
+    setError("");
+    const result = await signInWithGoogle();
+    if (result.error) {
+      setError(result.error);
+      setIsGoogleLoading(false);
+    }
   }
 
   if (isSuccess) {
@@ -122,9 +143,10 @@ export default function RegisterForm() {
         type="button"
         variant="outline"
         onClick={handleGoogle}
+        disabled={isGoogleLoading}
         className="w-full"
       >
-        Cadastrar com Google
+        {isGoogleLoading ? "Redirecionando..." : "Cadastrar com Google"}
       </Button>
     </form>
   );

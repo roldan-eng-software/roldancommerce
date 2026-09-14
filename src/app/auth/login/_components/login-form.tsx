@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { signInWithGoogle } from "@/lib/auth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,10 +19,26 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 
+const ERROR_MESSAGES: Record<string, string> = {
+  auth_failed: "Falha na autenticação. Tente novamente.",
+  oauth_denied: "Acesso ao Google foi negado. Tente novamente.",
+};
+
 export default function LoginForm() {
+  const searchParams = useSearchParams();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam) {
+      setError(
+        ERROR_MESSAGES[errorParam] ?? "Erro ao autenticar. Tente novamente."
+      );
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -49,10 +67,13 @@ export default function LoginForm() {
   }
 
   async function handleGoogle() {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
+    setIsGoogleLoading(true);
+    setError("");
+    const result = await signInWithGoogle();
+    if (result.error) {
+      setError(result.error);
+      setIsGoogleLoading(false);
+    }
   }
 
   return (
@@ -101,9 +122,10 @@ export default function LoginForm() {
         type="button"
         variant="outline"
         onClick={handleGoogle}
+        disabled={isGoogleLoading}
         className="w-full"
       >
-        Entrar com Google
+        {isGoogleLoading ? "Redirecionando..." : "Entrar com Google"}
       </Button>
     </form>
   );

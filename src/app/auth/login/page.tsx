@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import LoginForm from "./_components/login-form";
 
@@ -9,7 +10,9 @@ export default function LoginPage() {
         Acesse sua conta para acompanhar pedidos.
       </p>
       <div className="mt-6">
-        <LoginForm />
+        <Suspense>
+          <LoginForm />
+        </Suspense>
       </div>
       <p className="mt-6 text-center text-sm text-zinc-500">
         Não tem conta?{" "}

@@ -47,9 +47,10 @@ type ProfileValues = z.infer<typeof profileSchema>;
 
 interface Props {
   userId: string;
+  redirectTo?: string;
 }
 
-export default function ProfileForm({ userId }: Props) {
+export default function ProfileForm({ userId, redirectTo = "/" }: Props) {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -119,6 +120,7 @@ export default function ProfileForm({ userId }: Props) {
 
     setIsSuccess(true);
     setIsSubmitting(false);
+    window.location.href = redirectTo;
   }
 
   if (isSuccess) {

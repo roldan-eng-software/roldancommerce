@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import ProfileContent from "./_components/profile-content";
@@ -16,5 +17,9 @@ export default async function ProfilePage() {
     redirect("/auth/login");
   }
 
-  return <ProfileContent userId={user.id} />;
+  return (
+    <Suspense>
+      <ProfileContent userId={user.id} />
+    </Suspense>
+  );
 }
