@@ -41,12 +41,19 @@ interface Props {
   categories: Category[];
   allProducts: ProductOption[];
   product?: ProductData;
+  initialImages?: Array<{
+    id: string;
+    url: string;
+    order: number;
+    is_primary: boolean;
+  }>;
 }
 
 export default function ProductForm({
   categories,
   allProducts,
   product,
+  initialImages = [],
 }: Props) {
   const router = useRouter();
   const isEditing = !!product;
@@ -75,9 +82,10 @@ export default function ProductForm({
   const [relatedIds, setRelatedIds] = useState<string[]>(
     product?.related_ids || []
   );
-  const [productImages, setProductImages] = useState<
-    Array<{ id: string; url: string; order: number; is_primary: boolean }>
-  >([]);
+  const [productImages, setProductImages] =
+    useState<
+      Array<{ id: string; url: string; order: number; is_primary: boolean }>
+    >(initialImages);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 

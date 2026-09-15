@@ -4,6 +4,7 @@ import {
   getCategoriesForSelect,
   getAllProductsForSelect,
 } from "@/app/_actions/products-admin";
+import { getProductImages } from "@/app/_actions/product-images";
 import ProductForm from "../_components/product-form";
 
 export default async function EditarProduto({
@@ -13,10 +14,11 @@ export default async function EditarProduto({
 }) {
   const { id } = await params;
 
-  const [product, categories, allProducts] = await Promise.all([
+  const [product, categories, allProducts, images] = await Promise.all([
     getProductAdmin(id),
     getCategoriesForSelect(),
     getAllProductsForSelect(),
+    getProductImages(id),
   ]);
 
   if (!product) {
@@ -34,6 +36,7 @@ export default async function EditarProduto({
           categories={categories}
           allProducts={allProducts}
           product={product}
+          initialImages={images}
         />
       </div>
     </div>
