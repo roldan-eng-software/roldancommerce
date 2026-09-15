@@ -17,6 +17,12 @@ const sizeClasses = {
   lg: "size-full aspect-square text-5xl",
 };
 
+const containerSizeClasses = {
+  sm: "size-16",
+  md: "w-full aspect-square",
+  lg: "w-full aspect-square",
+};
+
 function isValidProductImageUrl(url?: string): boolean {
   if (!url) return false;
 
@@ -43,7 +49,9 @@ export default function ProductImage({
   const fallbackChar = nome.charAt(0);
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div
+      className={`relative overflow-hidden ${containerSizeClasses[size]} ${className}`}
+    >
       {safeImageUrl ? (
         <Image
           src={safeImageUrl}
