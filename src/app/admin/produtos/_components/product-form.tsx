@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { createProduct, updateProduct } from "@/app/_actions/products-admin";
 import { uploadProductImage } from "@/app/_actions/product-images";
+import { createProduct, updateProduct } from "@/app/_actions/products-admin";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import ImageUpload from "./image-upload";
 
 interface Category {
@@ -49,6 +49,17 @@ interface Props {
   }>;
 }
 
+function isValidSupabaseProductImageUrl(url?: string): boolean {
+  if (!url) return false;
+
+  const trimmed = url.trim();
+  if (!trimmed.startsWith("http")) return false;
+
+  return /\/storage\/v1\/object\/public\/product-images\/.*\.[a-z0-9]+(?:\?.*)?$/i.test(
+    trimmed
+  );
+}
+
 export default function ProductForm({
   categories,
   allProducts,
@@ -82,11 +93,53 @@ export default function ProductForm({
   const [relatedIds, setRelatedIds] = useState<string[]>(
     product?.related_ids || []
   );
-  const [productImages, setProductImages] =
-    useState<
-      Array<{ id: string; url: string; order: number; is_primary: boolean }>
-    >(initialImages);
+  const [productImages, setProductImages] = useState<
+    Array<{ id: string; url: string; order: number; is_primary: boolean }>
+  >(
+    initialImages.length > 0
+      ? initialImages.filter((image) =>
+          isValidSupabaseProductImageUrl(image.url)
+        )
+      : product?.image_url && isValidSupabaseProductImageUrl(product.image_url)
+        ? [
+            {
+              id: `legacy-${product.id}`,
+              url: product.image_url,
+              order: 0,
+              is_primary: true,
+            },
+          ]
+        : []
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      setProductImages(
+        initialImages.filter((image) =>
+          isValidSupabaseProductImageUrl(image.url)
+        )
+      );
+      return;
+    }
+
+    if (
+      product?.image_url &&
+      isValidSupabaseProductImageUrl(product.image_url)
+    ) {
+      setProductImages([
+        {
+          id: `legacy-${product.id}`,
+          url: product.image_url,
+          order: 0,
+          is_primary: true,
+        },
+      ]);
+      return;
+    }
+
+    setProductImages([]);
+  }, [initialImages, product]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [error, setError] = useState("");

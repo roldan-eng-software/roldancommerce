@@ -1,8 +1,8 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth/admin";
+import { createClient } from "@/lib/supabase/server";
+import { revalidatePath } from "next/cache";
 
 const BUCKET = "product-images";
 
@@ -25,7 +25,48 @@ export async function getProductImages(
     .eq("product_id", productId)
     .order("order");
 
-  return (data ?? []) as unknown as ProductImage[];
+  const images = (data ?? []) as unknown as ProductImage[];
+  if (images.length > 0) return images;
+
+  const { data: product } = await supabase
+    .from("products")
+    .select("image_url")
+    .eq("id", productId)
+    .single();
+
+  if (!product?.image_url) return [];
+
+  return [
+    {
+      id: `legacy-${productId}`,
+      url: product.image_url,
+      order: 0,
+      is_primary: true,
+    },
+  ];
+}
+
+async function syncPrimaryProductImage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  productId: string,
+  fallbackUrl?: string
+) {
+  if (!supabase) return;
+
+  const { data: primaryImage } = await supabase
+    .from("product_images")
+    .select("url")
+    .eq("product_id", productId)
+    .order("order")
+    .limit(1)
+    .maybeSingle();
+
+  const nextImageUrl = primaryImage?.url ?? fallbackUrl ?? "";
+
+  await supabase
+    .from("products")
+    .update({ image_url: nextImageUrl })
+    .eq("id", productId);
 }
 
 export async function uploadProductImage(
@@ -85,7 +126,16 @@ export async function uploadProductImage(
     return { error: `Falha ao registrar imagem: ${dbError.message}` };
   }
 
-  if ((count || 0) === 0) {
+  if (
+    (count || 0) === 0 ||
+    !(
+      await supabase
+        .from("products")
+        .select("image_url")
+        .eq("id", productId)
+        .single()
+    ).data?.image_url
+  ) {
     await supabase
       .from("products")
       .update({ image_url: publicUrl })
@@ -142,6 +192,24 @@ export async function deleteProductImage(
       .from("product_images")
       .update({ is_primary: true })
       .eq("id", firstId);
+
+    const { data: firstImage } = await supabase
+      .from("product_images")
+      .select("url")
+      .eq("id", firstId)
+      .single();
+
+    if (firstImage?.url) {
+      await supabase
+        .from("products")
+        .update({ image_url: firstImage.url })
+        .eq("id", productId);
+    }
+  } else {
+    await supabase
+      .from("products")
+      .update({ image_url: "" })
+      .eq("id", productId);
   }
 
   revalidatePath(`/admin/produtos/${productId}`);
@@ -172,6 +240,19 @@ export async function setPrimaryImage(
 
   if (error) return { error: error.message };
 
+  const { data: selectedImage } = await supabase
+    .from("product_images")
+    .select("url")
+    .eq("id", imageId)
+    .single();
+
+  if (selectedImage?.url) {
+    await supabase
+      .from("products")
+      .update({ image_url: selectedImage.url })
+      .eq("id", productId);
+  }
+
   revalidatePath(`/admin/produtos/${productId}`);
   revalidatePath(`/produto/${productId}`);
   return {};
@@ -196,6 +277,20 @@ export async function reorderProductImages(
   );
 
   await Promise.all(updates);
+
+  const { data: reorderedImages } = await supabase
+    .from("product_images")
+    .select("url")
+    .eq("product_id", productId)
+    .order("order")
+    .limit(1);
+
+  if (reorderedImages && reorderedImages.length > 0) {
+    await supabase
+      .from("products")
+      .update({ image_url: reorderedImages[0].url })
+      .eq("id", productId);
+  }
 
   revalidatePath(`/admin/produtos/${productId}`);
   revalidatePath(`/produto/${productId}`);

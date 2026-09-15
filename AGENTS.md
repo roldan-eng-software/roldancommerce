@@ -176,3 +176,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 - Dark mode supported via `next-themes` — all components use semantic CSS tokens
 - Product images uploaded via Supabase Storage (bucket: `product-images`)
 - Admin product creation uses file upload (not URL input)
+- The `product_images` table is the source of truth for product galleries; use its primary/ordered image before falling back to `products.image_url`
+- `products.image_url` is kept synchronized with the first gallery image for compatibility, but legacy URLs, external page URLs, and Storage paths without a file extension must be ignored
+- Image mutations (upload, delete, primary selection, and reorder) must preserve gallery order and update the synchronized `products.image_url` value
