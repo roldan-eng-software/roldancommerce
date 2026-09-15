@@ -1,5 +1,13 @@
 import { createClient } from "@/lib/supabase/client";
 
+function getGoogleAuthErrorMessage(message: string): string {
+  if (message.toLowerCase().includes("provider is not enabled")) {
+    return "Cadastro com Google indisponível no momento. Tente criar sua conta com e-mail e senha.";
+  }
+
+  return message;
+}
+
 export async function signInWithGoogle(): Promise<{ error?: string }> {
   try {
     const supabase = createClient();
@@ -9,7 +17,7 @@ export async function signInWithGoogle(): Promise<{ error?: string }> {
     });
 
     if (error) {
-      return { error: error.message };
+      return { error: getGoogleAuthErrorMessage(error.message) };
     }
 
     return {};
