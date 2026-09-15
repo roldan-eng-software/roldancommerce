@@ -202,23 +202,23 @@ export default function FinancialDashboard({ metrics, orders }: Props) {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Faturamento</p>
           <p className="mt-1 text-2xl font-bold text-green-600">
             {formatPrice(metrics.totalRevenue / 100)}
           </p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Pedidos pagos</p>
           <p className="mt-1 text-2xl font-bold">{metrics.totalOrders}</p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Ticket médio</p>
           <p className="mt-1 text-2xl font-bold">
             {formatPrice(metrics.avgTicket / 100)}
           </p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Pendentes</p>
           <p className="mt-1 text-2xl font-bold text-amber-600">
             {metrics.pendingPayments}
@@ -230,7 +230,7 @@ export default function FinancialDashboard({ metrics, orders }: Props) {
       </div>
 
       {metrics.dailySales.length > 0 && (
-        <div className="mt-6 rounded-xl border bg-white p-4">
+        <div className="mt-6 rounded-xl border bg-card p-4">
           <h2 className="text-sm font-semibold">Vendas diárias</h2>
           <div className="mt-4 flex items-end gap-1" style={{ height: 160 }}>
             {metrics.dailySales.map((day) => (
@@ -262,7 +262,7 @@ export default function FinancialDashboard({ metrics, orders }: Props) {
         </div>
       )}
 
-      <div className="mt-6 rounded-xl border bg-white">
+      <div className="mt-6 rounded-xl border bg-card">
         <div className="border-b px-4 py-3">
           <h2 className="text-sm font-semibold">Últimos pedidos</h2>
         </div>

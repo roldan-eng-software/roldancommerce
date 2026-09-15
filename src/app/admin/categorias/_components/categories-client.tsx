@@ -103,7 +103,7 @@ export default function CategoriesClient({ categories }: Props) {
       </div>
 
       {showForm && (
-        <div className="mt-6 rounded-xl border bg-white p-6">
+        <div className="mt-6 rounded-xl border bg-card p-6">
           <h2 className="text-lg font-semibold">
             {editing ? "Editar categoria" : "Nova categoria"}
           </h2>
@@ -165,7 +165,7 @@ export default function CategoriesClient({ categories }: Props) {
         </div>
       )}
 
-      <div className="mt-6 rounded-xl border bg-white">
+      <div className="mt-6 rounded-xl border bg-card">
         {categories.length === 0 ? (
           <div className="p-6 text-center text-sm text-zinc-500">
             Nenhuma categoria encontrada.

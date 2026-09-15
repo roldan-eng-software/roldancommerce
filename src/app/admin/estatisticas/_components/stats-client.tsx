@@ -78,17 +78,17 @@ export default function StatsClient({ data }: Props) {
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Faturamento total</p>
           <p className="mt-1 text-2xl font-bold text-green-600">
             {formatPrice(totalRevenue / 100)}
           </p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Pedidos pagos</p>
           <p className="mt-1 text-2xl font-bold">{totalOrders}</p>
         </div>
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-sm text-zinc-500">Ticket médio</p>
           <p className="mt-1 text-2xl font-bold">
             {totalOrders > 0
@@ -98,7 +98,7 @@ export default function StatsClient({ data }: Props) {
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border bg-white p-4">
+      <div className="mt-6 rounded-xl border bg-card p-4">
         <h2 className="text-sm font-semibold">Vendas por período</h2>
         {data.salesByPeriod.length === 0 ? (
           <p className="mt-4 text-center text-sm text-zinc-500">
@@ -141,7 +141,7 @@ export default function StatsClient({ data }: Props) {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <h2 className="text-sm font-semibold">
             Top 10 produtos mais vendidos
           </h2>
@@ -179,7 +179,7 @@ export default function StatsClient({ data }: Props) {
           )}
         </div>
 
-        <div className="rounded-xl border bg-white p-4">
+        <div className="rounded-xl border bg-card p-4">
           <h2 className="text-sm font-semibold">Clientes recorrentes</h2>
           <p className="mt-1 text-xs text-zinc-500">
             Clientes com 2 ou mais pedidos

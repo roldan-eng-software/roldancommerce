@@ -145,7 +145,7 @@ export default function ShippingClient({ orders }: Props) {
       </div>
 
       {showCalculator && (
-        <div className="mt-4 rounded-xl border bg-white p-4">
+        <div className="mt-4 rounded-xl border bg-card p-4">
           <h2 className="text-sm font-semibold">Calculadora de frete</h2>
           <div className="mt-3 flex gap-2">
             <input
@@ -200,7 +200,7 @@ export default function ShippingClient({ orders }: Props) {
         </select>
       </div>
 
-      <div className="mt-4 rounded-xl border bg-white">
+      <div className="mt-4 rounded-xl border bg-card">
         {filtered.length === 0 ? (
           <div className="p-6 text-center text-sm text-zinc-500">
             Nenhum pedido encontrado.
@@ -295,7 +295,7 @@ export default function ShippingClient({ orders }: Props) {
 
       {shipModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md rounded-xl bg-white p-6">
+          <div className="w-full max-w-md rounded-xl bg-card p-6">
             <h2 className="text-lg font-semibold">Registrar envio</h2>
             <p className="mt-1 text-sm text-zinc-500">
               Pedido #{shipModal.slice(0, 8).toUpperCase()}

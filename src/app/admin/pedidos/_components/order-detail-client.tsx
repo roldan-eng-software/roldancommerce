@@ -130,7 +130,7 @@ export default function OrderDetailClient({ order }: Props) {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Itens do pedido</h2>
             <ul className="mt-3 divide-y">
               {order.items.map((item) => (
@@ -162,7 +162,7 @@ export default function OrderDetailClient({ order }: Props) {
             </ul>
           </section>
 
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Endereço de entrega</h2>
             <div className="mt-2 text-sm text-zinc-600">
               <p>
@@ -179,7 +179,7 @@ export default function OrderDetailClient({ order }: Props) {
         </div>
 
         <div className="flex flex-col gap-4">
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Valores</h2>
             <div className="mt-3 flex flex-col gap-2 text-sm">
               <div className="flex justify-between">
@@ -197,7 +197,7 @@ export default function OrderDetailClient({ order }: Props) {
             </div>
           </section>
 
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Pagamento</h2>
             <p className="mt-2 text-sm">
               {paymentLabels[order.payment_method] || order.payment_method}
@@ -207,7 +207,7 @@ export default function OrderDetailClient({ order }: Props) {
             </p>
           </section>
 
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Entrega</h2>
             <div className="mt-2 text-sm">
               <p>CEP destino: {order.frete_cep || order.cep}</p>
@@ -222,7 +222,7 @@ export default function OrderDetailClient({ order }: Props) {
             </div>
           </section>
 
-          <section className="rounded-xl border bg-white p-4">
+          <section className="rounded-xl border bg-card p-4">
             <h2 className="text-sm font-semibold">Ações</h2>
             <div className="mt-3 flex flex-col gap-2">
               {order.status === "pendente" && (

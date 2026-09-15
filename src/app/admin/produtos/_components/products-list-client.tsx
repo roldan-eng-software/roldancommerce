@@ -130,7 +130,7 @@ export default function ProductsListClient({ products, categories }: Props) {
         </select>
       </div>
 
-      <div className="mt-4 rounded-xl border bg-white">
+      <div className="mt-4 rounded-xl border bg-card">
         {filtered.length === 0 ? (
           <div className="p-6 text-center text-sm text-zinc-500">
             Nenhum produto encontrado.
