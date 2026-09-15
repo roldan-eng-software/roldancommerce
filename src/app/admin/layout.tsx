@@ -42,12 +42,9 @@ export default async function AdminLayout({
   }
 
   return (
-    <div
-      className="flex min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-50 dark:text-zinc-900"
-      style={{ colorScheme: "light" }}
-    >
-      <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r bg-white">
-        <div className="flex h-14 items-center border-b px-4">
+    <div className="flex min-h-screen bg-background text-foreground">
+      <aside className="fixed left-0 top-0 z-40 flex h-full w-64 flex-col border-r border-border bg-card">
+        <div className="flex h-14 items-center border-b border-border px-4">
           <Link href="/admin" className="text-lg font-bold">
             Roldan Admin
           </Link>
@@ -57,18 +54,18 @@ export default async function AdminLayout({
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+              className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
             >
               <span>{link.icon}</span>
               {link.label}
             </Link>
           ))}
         </nav>
-        <div className="border-t p-3">
-          <div className="text-xs text-zinc-500">{user.email}</div>
+        <div className="border-t border-border p-3">
+          <div className="text-xs text-muted-foreground">{user.email}</div>
           <Link
             href="/"
-            className="mt-2 block text-xs text-zinc-500 hover:text-zinc-800"
+            className="mt-2 block text-xs text-muted-foreground hover:text-foreground"
           >
             ← Voltar à loja
           </Link>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createProduct, updateProduct } from "@/app/_actions/products-admin";
+import { uploadProductImage } from "@/app/_actions/product-images";
 import ImageUpload from "./image-upload";
 
 interface Category {
@@ -77,6 +78,8 @@ export default function ProductForm({
   const [productImages, setProductImages] = useState<
     Array<{ id: string; url: string; order: number; is_primary: boolean }>
   >([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -111,14 +114,31 @@ export default function ProductForm({
       ? await updateProduct(product.id, data)
       : await createProduct(data);
 
-    setLoading(false);
-
     if (result.error) {
+      setLoading(false);
       setError(result.error);
-    } else {
-      router.push("/admin/produtos");
-      router.refresh();
+      return;
     }
+
+    if (
+      !isEditing &&
+      selectedFile &&
+      "id" in result &&
+      typeof result.id === "string"
+    ) {
+      const uploadResult = await uploadProductImage(result.id, selectedFile, 0);
+      if (uploadResult.error) {
+        setLoading(false);
+        setError(
+          `Produto criado, mas falha no upload da imagem: ${uploadResult.error}`
+        );
+        return;
+      }
+    }
+
+    setLoading(false);
+    router.push("/admin/produtos");
+    router.refresh();
   }
 
   function toggleRelated(id: string) {
@@ -346,28 +366,51 @@ export default function ProductForm({
                 />
               ) : (
                 <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-1.5">
-                    <label htmlFor="imageUrl" className="text-sm font-medium">
-                      URL da imagem principal
-                    </label>
-                    <input
-                      id="imageUrl"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      className="rounded-lg border px-3 py-2 text-sm"
-                      placeholder="https://..."
-                    />
-                    {imageUrl && (
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSelectedFile(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="rounded-lg border-2 border-dashed px-4 py-3 text-sm text-zinc-500 hover:border-zinc-400 hover:text-zinc-700"
+                  >
+                    {selectedFile
+                      ? selectedFile.name
+                      : "Selecionar imagem do computador"}
+                  </button>
+                  {selectedFile && (
+                    <div className="relative">
                       <img
-                        src={imageUrl}
+                        src={URL.createObjectURL(selectedFile)}
                         alt="Preview"
-                        className="mt-2 h-32 w-32 rounded-lg object-cover"
+                        className="h-32 w-32 rounded-lg object-cover"
                       />
-                    )}
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = "";
+                          }
+                        }}
+                        className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-xs text-white hover:bg-red-600"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  )}
                   <p className="text-xs text-zinc-400">
-                    Após criar o produto, você poderá adicionar múltiplas
-                    imagens.
+                    JPG, PNG ou WebP. Máximo 5MB. Após criar o produto, você
+                    poderá adicionar mais imagens.
                   </p>
                 </div>
               )}

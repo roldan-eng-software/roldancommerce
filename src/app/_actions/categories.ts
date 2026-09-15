@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 interface Category {
   id: string;
@@ -64,8 +65,12 @@ export async function createCategory(data: {
   name: string;
   description?: string;
 }) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const slug = data.name
     .toLowerCase()
@@ -100,8 +105,12 @@ export async function updateCategory(
   id: string,
   data: { name: string; description?: string }
 ) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const slug = data.name
     .toLowerCase()
@@ -127,8 +136,12 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: string) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { count } = await supabase
     .from("products")
@@ -153,8 +166,12 @@ export async function deleteCategory(id: string) {
 export async function updateCategoryOrder(
   items: { id: string; order: number }[]
 ) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const updates = items.map((item) =>
     supabase.from("categories").update({ order: item.order }).eq("id", item.id)

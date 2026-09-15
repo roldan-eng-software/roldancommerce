@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/admin";
 
 const BUCKET = "product-images";
 
@@ -32,8 +33,12 @@ export async function uploadProductImage(
   file: File,
   order: number = 0
 ): Promise<{ error?: string; url?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
@@ -97,8 +102,12 @@ export async function deleteProductImage(
   imageId: string,
   productId: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { data: image } = await supabase
     .from("product_images")
@@ -144,8 +153,12 @@ export async function setPrimaryImage(
   imageId: string,
   productId: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   await supabase
     .from("product_images")
@@ -168,8 +181,12 @@ export async function reorderProductImages(
   productId: string,
   imageIds: string[]
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const updates = imageIds.map((id, index) =>
     supabase

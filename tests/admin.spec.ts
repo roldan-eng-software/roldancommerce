@@ -111,6 +111,20 @@ test.describe("Products CRUD (Spec 04)", () => {
     }
   });
 
+  test("new product form has file upload instead of URL input", async ({
+    page,
+  }) => {
+    await page.goto("/admin/produtos/novo");
+    if (page.url().includes("/admin")) {
+      await expect(
+        page.getByText("Selecionar imagem do computador")
+      ).toBeVisible();
+      await expect(
+        page.getByText("JPG, PNG ou WebP. Máximo 5MB")
+      ).toBeVisible();
+    }
+  });
+
   test("product form shows stock fields for pronta-entrega", async ({
     page,
   }) => {

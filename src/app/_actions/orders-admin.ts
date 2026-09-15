@@ -2,6 +2,8 @@
 
 import { createBuildClient } from "@/lib/supabase/build";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/admin";
+import { restoreStock } from "@/app/_actions/stock";
 import { revalidatePath } from "next/cache";
 
 interface OrderListItem {
@@ -195,8 +197,12 @@ export async function updateOrderStatus(
   orderId: string,
   status: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { error } = await supabase
     .from("orders")
@@ -213,8 +219,12 @@ export async function updateOrderStatus(
 export async function cancelOrder(
   orderId: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { data: order } = await supabase
     .from("orders")
@@ -225,6 +235,20 @@ export async function cancelOrder(
   if (!order) return { error: "Pedido não encontrado" };
   if (order.status !== "pendente") {
     return { error: "Apenas pedidos pendentes podem ser cancelados" };
+  }
+
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("product_id, quantity")
+    .eq("order_id", orderId);
+
+  if (items && items.length > 0) {
+    await restoreStock(
+      items.map((i: { product_id: string; quantity: number }) => ({
+        productId: i.product_id,
+        quantity: i.quantity,
+      }))
+    );
   }
 
   const { error } = await supabase

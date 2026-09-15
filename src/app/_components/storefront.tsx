@@ -33,7 +33,7 @@ export default function Storefront({
 
   if (initialProducts.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed p-10 text-center text-zinc-500">
+      <p className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
         Catálogo indisponível no momento. Volte em breve.
       </p>
     );
@@ -51,7 +51,9 @@ export default function Storefront({
         ))}
       </div>
       {loading && (
-        <p className="text-center text-sm text-zinc-500">Carregando...</p>
+        <p className="text-center text-sm text-muted-foreground">
+          Carregando...
+        </p>
       )}
       {totalPages > 1 ? (
         <nav

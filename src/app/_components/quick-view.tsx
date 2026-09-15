@@ -53,7 +53,7 @@ export default function QuickView({ product, onClose }: Props) {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="pointer-events-auto w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-zinc-900"
+              className="pointer-events-auto w-full max-w-lg overflow-hidden rounded-2xl bg-card shadow-2xl"
             >
               <ProductImage
                 productId={product.id}
@@ -63,7 +63,7 @@ export default function QuickView({ product, onClose }: Props) {
               />
               <div className="flex flex-col gap-2 p-6">
                 <h2 className="text-xl font-bold">{product.nome}</h2>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300">
+                <p className="text-sm text-muted-foreground">
                   {product.descricao}
                 </p>
                 <p className="text-2xl font-bold">
@@ -73,7 +73,7 @@ export default function QuickView({ product, onClose }: Props) {
                   {prazoLabel(product.disponibilidade)}
                 </p>
                 {product.medidas && (
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-muted-foreground">
                     Medidas: {product.medidas}
                   </p>
                 )}
@@ -93,7 +93,7 @@ export default function QuickView({ product, onClose }: Props) {
                   type="button"
                   variant="ghost"
                   onClick={handleClose}
-                  className="mt-1 text-sm text-zinc-500 hover:text-zinc-800"
+                  className="mt-1 text-sm text-muted-foreground hover:text-foreground"
                 >
                   Fechar
                 </Button>

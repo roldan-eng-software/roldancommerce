@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createBuildClient } from "@/lib/supabase/build";
+import { requireAdmin } from "@/lib/auth/admin";
 
 interface StockInfo {
   id: string;
@@ -68,8 +69,12 @@ export async function checkStock(
 export async function decrementStock(
   items: { productId: string; quantity: number }[]
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   for (const item of items) {
     const { data: product } = await supabase
@@ -102,8 +107,12 @@ export async function decrementStock(
 export async function restoreStock(
   items: { productId: string; quantity: number }[]
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   for (const item of items) {
     const { data: product } = await supabase

@@ -9,11 +9,11 @@ export default function CartBadge() {
   return (
     <Link
       href="/carrinho"
-      className="relative rounded-full border px-3 py-1.5 text-xs font-medium"
+      className="relative rounded-full border border-border px-3 py-1.5 text-xs font-medium"
     >
       Carrinho
       {totalItems > 0 && (
-        <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-black text-[10px] font-bold text-white">
+        <span className="absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
           {totalItems}
         </span>
       )}

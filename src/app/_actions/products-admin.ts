@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createBuildClient } from "@/lib/supabase/build";
+import { requireAdmin } from "@/lib/auth/admin";
 
 interface ProductListItem {
   id: string;
@@ -168,8 +169,12 @@ export async function createProduct(data: {
   image_url?: string;
   related_ids?: string[];
 }) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const slug = data.name
     .toLowerCase()
@@ -250,8 +255,12 @@ export async function updateProduct(
     related_ids?: string[];
   }
 ) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const slug = data.name
     .toLowerCase()
@@ -315,8 +324,12 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string) {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { count } = await supabase
     .from("order_items")

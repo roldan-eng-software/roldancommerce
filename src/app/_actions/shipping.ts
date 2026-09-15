@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createBuildClient } from "@/lib/supabase/build";
+import { requireAdmin } from "@/lib/auth/admin";
 
 interface ShippingOrder {
   id: string;
@@ -128,8 +129,12 @@ export async function markAsShipped(
   carrier: string,
   trackingCode: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { data: order } = await supabase
     .from("orders")
@@ -164,8 +169,12 @@ export async function markAsShipped(
 export async function markAsDelivered(
   orderId: string
 ): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  if (!supabase) return { error: "Supabase não configurado" };
+  let supabase;
+  try {
+    supabase = await requireAdmin();
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 
   const { data: order } = await supabase
     .from("orders")

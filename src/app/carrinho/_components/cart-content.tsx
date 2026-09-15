@@ -53,7 +53,7 @@ export default function CartContent() {
     return (
       <main className="mx-auto flex min-h-[60vh] w-full max-w-4xl flex-col items-center justify-center px-4 py-12 text-center">
         <p className="text-2xl font-bold">Seu carrinho está vazio</p>
-        <p className="mt-2 text-sm text-zinc-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           Adicione itens da loja para continuar.
         </p>
         <Button render={<a href="/" />} className="mt-6">
@@ -69,7 +69,7 @@ export default function CartContent() {
 
       <div className="mt-6 flex flex-col gap-6 lg:flex-row">
         <div className="flex-1">
-          <ul className="divide-y rounded-xl border">
+          <ul className="divide-y divide-border rounded-xl border border-border">
             {items.map(({ product, quantity }) => (
               <li key={product.id} className="flex gap-4 p-4">
                 <ProductImage
@@ -86,7 +86,7 @@ export default function CartContent() {
                   >
                     {product.nome}
                   </Link>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-muted-foreground">
                     {prazoLabel(product.disponibilidade)}
                   </p>
                   <p className="text-sm font-bold">
@@ -136,7 +136,7 @@ export default function CartContent() {
         </div>
 
         <div className="w-full lg:w-80">
-          <div className="sticky top-20 rounded-xl border p-4">
+          <div className="sticky top-20 rounded-xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Resumo</h2>
             <div className="mt-3 flex flex-col gap-2 text-sm">
               <div className="flex justify-between">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { formatPrice } from "@/data/products";
 
 interface FinancialMetrics {
@@ -55,8 +55,20 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function FinancialDashboard({ metrics, orders }: Props) {
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dateFrom = searchParams.get("from") || "";
+  const dateTo = searchParams.get("to") || "";
+
+  function updateDate(key: "from" | "to", value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+    router.push(`/admin/financeiro?${params.toString()}`, { scroll: false });
+  }
 
   function exportCSV() {
     const headers = [
@@ -174,7 +186,7 @@ export default function FinancialDashboard({ metrics, orders }: Props) {
           <input
             type="date"
             value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
+            onChange={(e) => updateDate("from", e.target.value)}
             className="rounded-lg border px-3 py-2 text-sm"
           />
         </div>
@@ -183,7 +195,7 @@ export default function FinancialDashboard({ metrics, orders }: Props) {
           <input
             type="date"
             value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
+            onChange={(e) => updateDate("to", e.target.value)}
             className="rounded-lg border px-3 py-2 text-sm"
           />
         </div>

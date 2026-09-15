@@ -38,3 +38,21 @@ export async function getIsAdmin(): Promise<boolean> {
     user.app_metadata?.role === "admin" || user.user_metadata?.role === "admin"
   );
 }
+
+export async function requireAdmin() {
+  const supabase = await createClient();
+  if (!supabase) throw new Error("Supabase não configurado");
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Não autenticado");
+
+  const isAdmin =
+    user.app_metadata?.role === "admin" || user.user_metadata?.role === "admin";
+
+  if (!isAdmin) throw new Error("Acesso não autorizado");
+
+  return supabase;
+}

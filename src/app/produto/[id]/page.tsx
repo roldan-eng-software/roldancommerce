@@ -59,16 +59,16 @@ export default async function ProductPage({
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8">
-      <nav className="mb-6 text-sm text-zinc-500">
-        <Link href="/" className="hover:text-zinc-800">
+      <nav className="mb-6 text-sm text-muted-foreground">
+        <Link href="/" className="hover:text-foreground">
           Roldan Marcenaria
         </Link>
         <span className="mx-2">/</span>
-        <Link href="/" className="hover:text-zinc-800">
+        <Link href="/" className="hover:text-foreground">
           Catálogo
         </Link>
         <span className="mx-2">/</span>
-        <span className="text-zinc-800">{product.nome}</span>
+        <span className="text-foreground">{product.nome}</span>
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
@@ -93,34 +93,32 @@ export default async function ProductPage({
           <p className="text-3xl font-bold">{formatPrice(product.preco)}</p>
 
           {product.resumoRapido && (
-            <p className="text-base text-zinc-600 dark:text-zinc-300">
+            <p className="text-base text-muted-foreground">
               {product.resumoRapido}
             </p>
           )}
 
-          <div className="flex flex-col gap-2 rounded-xl border p-4 text-sm">
+          <div className="flex flex-col gap-2 rounded-xl border border-border p-4 text-sm">
             <h3 className="font-semibold">Especificações</h3>
             {product.medidas && (
               <div className="flex justify-between">
-                <span className="text-zinc-500">Medidas</span>
+                <span className="text-muted-foreground">Medidas</span>
                 <span className="font-medium">{product.medidas}</span>
               </div>
             )}
             {product.corMdf && (
               <div className="flex justify-between">
-                <span className="text-zinc-500">Cor MDF</span>
+                <span className="text-muted-foreground">Cor MDF</span>
                 <span className="font-medium">{product.corMdf}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-zinc-500">Material</span>
+              <span className="text-muted-foreground">Material</span>
               <span className="font-medium">MDF revestido 100%</span>
             </div>
           </div>
 
-          <p className="text-sm text-zinc-600 dark:text-zinc-300">
-            {product.descricao}
-          </p>
+          <p className="text-sm text-muted-foreground">{product.descricao}</p>
 
           <AddToCartButton product={product} stock={stock} />
         </div>

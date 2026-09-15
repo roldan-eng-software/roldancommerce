@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { formatPrice } from "@/data/products";
 
 interface SalesByPeriod {
@@ -33,7 +33,15 @@ interface Props {
 }
 
 export default function StatsClient({ data }: Props) {
-  const [period, setPeriod] = useState("30");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const period = searchParams.get("period") || "30";
+
+  function setPeriod(value: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("period", value);
+    router.push(`/admin/estatisticas?${params.toString()}`, { scroll: false });
+  }
 
   const totalRevenue = data.salesByPeriod.reduce((s, d) => s + d.total, 0);
   const totalOrders = data.salesByPeriod.reduce((s, d) => s + d.count, 0);
